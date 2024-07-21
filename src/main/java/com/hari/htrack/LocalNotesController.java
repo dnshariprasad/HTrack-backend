@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/notes")
-public class NotesController {
+@RequestMapping("/temp/notes")
+public class LocalNotesController {
     private final List<Note> notes;
 
     private final ItemService itemService;
 
-    public NotesController(ItemService itemService) {
+    public LocalNotesController(ItemService itemService) {
         this.itemService = itemService;
         notes = itemService.getAllItems();
     }
