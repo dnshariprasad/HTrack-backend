@@ -9,19 +9,19 @@ import java.util.*;
 @RestController
 @RequestMapping("/notes")
 public class NotesController {
-    private List<Note> notes = new ArrayList<>();
+    private List<Note> notes;
 
-    public NotesController() {
-        notes.add(new Note(1, "orci, adipiscing non, luctus sit amet, faucibus ut, nulla.", "feugiat. Sed nec metus facilisis lorem", "http://naver.com", "nec orci. Donec nibh.", "enim. Nunc ut erat. Sed"));
-        notes.add(new Note(2, "tempor arcu. Vestibulum ut eros", "dui nec urna suscipit", "http://walmart.com", "elit, pharetra ut, pharetra sed, hendrerit a, arcu. Sed", "luctus lobortis. Class aptent taciti sociosqu ad litora torquent"));
-        notes.add(new Note(3, "ligula. Nullam feugiat", "sapien. Nunc pulvinar arcu et pede. Nunc sed orci", "http://google.com", "lectus quis", "lorem lorem, luctus ut, pellentesque eget, dictum"));
-        notes.add(new Note(4, "vulputate, posuere vulputate, lacus. Cras", "ipsum nunc id enim. Curabitur massa.", "http://youtube.com", "faucibus lectus, a sollicitudin orci sem", "libero lacus, varius"));
-        notes.add(new Note(5, "urna, nec luctus felis purus ac tellus. Suspendisse sed", "commodo hendrerit. Donec porttitor", "http://cnn.com", "consectetuer mauris id", "eu neque pellentesque massa lobortis"));
+    private ItemService itemService;
+
+    public NotesController(ItemService itemService) {
+        this.itemService = itemService;
+        notes = itemService.getAllItems();
     }
+
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<Note>>> notesList() {
-        return ResponseUtil.success(notes.stream().toList());
+        return ResponseUtil.success(notes);
     }
 
     @PostMapping

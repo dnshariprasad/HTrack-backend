@@ -8,6 +8,9 @@ public class Note {
     private String type;
     private String tags;
 
+    public Note() {
+    }
+
     public Note(int id, String title, String info, String link, String type, String tags) {
         this.id = id;
         this.title = title;
