@@ -9,9 +9,9 @@ import java.util.*;
 @RestController
 @RequestMapping("/notes")
 public class NotesController {
-    private List<Note> notes;
+    private final List<Note> notes;
 
-    private ItemService itemService;
+    private final ItemService itemService;
 
     public NotesController(ItemService itemService) {
         this.itemService = itemService;
@@ -20,8 +20,30 @@ public class NotesController {
 
 
     @GetMapping
-    public ResponseEntity<BaseResponse<List<Note>>> notesList() {
-        return ResponseUtil.success(notes);
+    public ResponseEntity<BaseResponse<List<Note>>> notesList(@RequestParam(required = false) String tags) {
+        if (null == tags || tags.isEmpty()) {
+            return ResponseUtil.success(notes);
+        } else {
+            Set<Note> filteredNotes = new HashSet<>();
+            String[] tagList = tags.split(",");
+            for (Note n : notes) {
+                for (String s : tagList) {
+                    if (n.getTags().contains(s))
+                        filteredNotes.add(n);
+                }
+            }
+            return ResponseUtil.success(filteredNotes.stream().toList());
+        }
+    }
+
+    @GetMapping
+    @RequestMapping("/tags")
+    public ResponseEntity<BaseResponse<List<String>>> getTags() {
+        Set<String> tags = new HashSet<>();
+        for (Note cn : notes) {
+            tags.addAll(Arrays.asList(cn.getTags().split(",")));
+        }
+        return ResponseUtil.success(new ArrayList<>(tags));
     }
 
     @PostMapping
