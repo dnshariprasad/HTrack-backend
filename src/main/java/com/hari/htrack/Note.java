@@ -1,9 +1,9 @@
 package com.hari.htrack;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Note {
@@ -14,12 +14,18 @@ public class Note {
     private String info;
     private String link;
     private String type;
-    private String tags;
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "note_tag",
+            joinColumns = @JoinColumn(name = "note_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
 
     public Note() {
     }
 
-    public Note(int id, String title, String info, String link, String type, String tags) {
+    public Note(int id, String title, String info, String link, String type, Set<Tag> tags) {
         this.id = id;
         this.title = title;
         this.info = info;
@@ -68,11 +74,11 @@ public class Note {
         this.type = type;
     }
 
-    public String getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
 

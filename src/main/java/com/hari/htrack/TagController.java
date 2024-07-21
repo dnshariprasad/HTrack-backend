@@ -24,8 +24,16 @@ public class TagController {
 
     @PostMapping
     public ResponseEntity<BaseResponse<Tag>> createTag(@RequestBody Tag tag) {
-        tagRepository.save(tag);
-        return ResponseUtil.success(tag);
+        try {
+            if (tagRepository.findByName(tag.getName()) == null) {
+                tagRepository.save(tag);
+                return ResponseUtil.success(tag);
+            } else {
+                return ResponseUtil.error(HttpStatus.BAD_REQUEST, "Tag with name '" + tag.getName() + "' already exists.");
+            }
+        } catch (Exception e) {
+            return ResponseUtil.error(HttpStatus.BAD_REQUEST, "Tag with name '" + tag.getName() + "' already exists.");
+        }
     }
 
     @DeleteMapping("/{id}")
