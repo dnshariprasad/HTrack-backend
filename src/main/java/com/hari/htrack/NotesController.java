@@ -1,6 +1,6 @@
 package com.hari.htrack;
 
-import jakarta.websocket.server.PathParam;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +20,18 @@ public class NotesController {
     }
 
     @GetMapping
-    public List<Note> notesList() {
-        return notes.stream().toList();
+    public ResponseEntity<BaseResponse<List<Note>>> notesList() {
+        return ResponseUtil.success(notes.stream().toList());
     }
 
     @PostMapping
-    public ResponseEntity<Note> createItem(@RequestBody Note note) {
+    public ResponseEntity<BaseResponse<Note>> createItem(@RequestBody Note note) {
         notes.add(note);
-        return ResponseEntity.ok(note);
+        return ResponseUtil.success(note);
     }
 
     @PutMapping
-    public ResponseEntity<Note> updateNote(@RequestBody Note note) {
+    public ResponseEntity<BaseResponse<Note>> updateNote(@RequestBody Note note) {
         Note n = null;
         for (Note cn : notes) {
             if (note.getId() == cn.getId()) {
@@ -46,14 +46,14 @@ public class NotesController {
             n.setTags(note.getTags());
             n.setTitle(note.getTitle());
             n.setType(note.getType());
-            return ResponseEntity.ok(note);
+            return ResponseUtil.success(n);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseUtil.error(HttpStatus.NOT_FOUND, "Note not found");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Note> deleteNote(@PathVariable int id) {
+    public ResponseEntity<BaseResponse<Note>> deleteNote(@PathVariable int id) {
         Note n = null;
         for (Note cn : notes) {
             if (id == cn.getId()) {
@@ -63,8 +63,8 @@ public class NotesController {
         }
         if (null != n) {
             notes.remove(n);
-            return ResponseEntity.ok(n);
+            return ResponseUtil.success(n);
         } else
-            return ResponseEntity.notFound().build();
+            return ResponseUtil.error(HttpStatus.NOT_FOUND, "Note not found");
     }
 }
