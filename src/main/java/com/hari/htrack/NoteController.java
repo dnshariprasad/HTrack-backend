@@ -5,10 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/notes")
@@ -18,10 +16,19 @@ public class NoteController {
     @Autowired
     private TagRepository tagRepository;
 
-
-    @GetMapping
-    public ResponseEntity<BaseResponse<List<Note>>> getNotes() {
-        return ResponseUtil.success(noteRepository.findAll());
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<Note>>> searchNotes(
+            @RequestParam(value = "tagName", required = false) String tagName
+    ) {
+        try {
+            List<String> tagNames = (tagName != null && !tagName.trim().isEmpty()) ?
+                    Arrays.asList(tagName.split("\\s*,\\s*")) // Split by comma and trim spaces
+                    : Collections.emptyList();
+            List<Note> notes = noteRepository.searchNotes(tagNames, tagNames.size());
+            return ResponseUtil.success(notes);
+        } catch (Exception e) {
+            return ResponseUtil.error(HttpStatus.NOT_FOUND, e.getLocalizedMessage());
+        }
     }
 
     @PostMapping
