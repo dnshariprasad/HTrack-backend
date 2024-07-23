@@ -25,7 +25,7 @@ public class TagController {
     @PostMapping
     public ResponseEntity<BaseResponse<Tag>> createTag(@RequestBody Tag tag) {
         try {
-            if (tagRepository.findByName(tag.getName()) == null) {
+            if (tagRepository.findByName(tag.getName()).isEmpty()) {
                 tagRepository.save(tag);
                 return ResponseUtil.success(tag);
             } else {
@@ -58,5 +58,15 @@ public class TagController {
         } else {
             return ResponseUtil.error(HttpStatus.NOT_FOUND, "Tag not found");
         }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<BaseResponse<Void>> deleteAll() {
+        try {
+            tagRepository.deleteAll();
+        } catch (Exception e) {
+            return ResponseUtil.error(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
+        }
+        return ResponseUtil.success();
     }
 }

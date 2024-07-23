@@ -3,6 +3,7 @@ package com.hari.htrack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -16,7 +17,7 @@ public class NoteController {
     @Autowired
     private TagRepository tagRepository;
 
-    @GetMapping("/search")
+    @GetMapping
     public ResponseEntity<BaseResponse<List<Note>>> searchNotes(
             @RequestParam(value = "tagName", required = false) String tagName
     ) {
@@ -31,6 +32,7 @@ public class NoteController {
         }
     }
 
+    @Transactional
     @PostMapping
     public ResponseEntity<BaseResponse<Note>> createNotes(@RequestBody Note noteRequest) {
         Note note = new Note();
@@ -63,6 +65,7 @@ public class NoteController {
         }
     }
 
+    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponse<Note>> updateNote(@PathVariable Long id, @RequestBody Note updateNote) {
         Optional<Note> noteOptional = noteRepository.findById(id);
@@ -87,5 +90,15 @@ public class NoteController {
         } else {
             return ResponseUtil.error(HttpStatus.NOT_FOUND, "Note not found");
         }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<BaseResponse<Void>> deleteAllNotes() {
+        try {
+            tagRepository.deleteAll();
+        } catch (Exception e) {
+            return ResponseUtil.error(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
+        }
+        return ResponseUtil.success();
     }
 }
