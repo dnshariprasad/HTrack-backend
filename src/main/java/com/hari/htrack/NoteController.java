@@ -48,7 +48,6 @@ public class NoteController {
             tags.add(tag);
         }
         note.setTags(tags);
-        note.setTags(tags);
         noteRepository.save(note);
         return ResponseUtil.success(note);
     }
@@ -71,7 +70,16 @@ public class NoteController {
             Note note = noteOptional.get();
             note.setTitle(updateNote.getTitle());
             note.setInfo(updateNote.getInfo());
-            note.setTags(updateNote.getTags());
+            Set<Tag> tags = new HashSet<>();
+            for (Tag tagName : updateNote.getTags()) {
+                Tag tag = tagRepository.findByName(tagName.getName()).orElseGet(() -> {
+                    Tag newTag = new Tag();
+                    newTag.setName(tagName.getName());
+                    return tagRepository.save(newTag);
+                });
+                tags.add(tag);
+            }
+            note.setTags(tags);
             note.setType(updateNote.getType());
             note.setLink(updateNote.getLink());
             Note updatedNote = noteRepository.save(note);
