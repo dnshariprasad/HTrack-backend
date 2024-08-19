@@ -56,12 +56,16 @@ public class NoteController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Note>> deleteNote(@PathVariable Long id) {
-        Optional<Note> noteOptional = noteRepository.findById(id);
-        if (noteOptional.isPresent()) {
-            noteRepository.deleteById(id);
-            return ResponseUtil.success(noteOptional.get());
-        } else {
-            return ResponseUtil.error(HttpStatus.NOT_FOUND, "Note not found");
+        try {
+            Optional<Note> noteOptional = noteRepository.findById(id);
+            if (noteOptional.isPresent()) {
+                noteRepository.deleteById(id);
+                return ResponseUtil.success(noteOptional.get());
+            } else {
+                return ResponseUtil.error(HttpStatus.NOT_FOUND, "Note not found");
+            }
+        } catch (Exception e) {
+            return ResponseUtil.error(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
         }
     }
 
@@ -95,7 +99,7 @@ public class NoteController {
     @DeleteMapping
     public ResponseEntity<BaseResponse<Void>> deleteAllNotes() {
         try {
-            tagRepository.deleteAll();
+            noteRepository.deleteAll();
         } catch (Exception e) {
             return ResponseUtil.error(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
         }
